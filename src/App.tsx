@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'
-import { Session } from '@supabase/supabase-js'
+import { supabase } from './integrations/supabase/client'
+import { Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { Toaster } from 'sonner'
 import Auth from './pages/Auth'
 import './App.css'
@@ -13,15 +13,15 @@ function App() {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: AuthChangeEvent, session: Session | null) => {
         setSession(session);
         setLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      setSession(data.session);
       setLoading(false);
     });
 
