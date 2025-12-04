@@ -1,0 +1,304 @@
+{
+  "name": "nullaudit-mcp-server",
+  "version": "3.0.0",
+  "description": "NullAudit Multi-LLM Security Analysis MCP Server - NullShot Agent Framework Integration",
+  "author": "NullAudit Team",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "nullshot",
+    "security-audit",
+    "ai-agent",
+    "web3",
+    "blockchain",
+    "smart-contracts"
+  ],
+  "mcp": {
+    "version": "1.0",
+    "capabilities": {
+      "tools": true,
+      "resources": true,
+      "prompts": true
+    },
+    "protocol": "http",
+    "serverEndpoint": "http://localhost:3000/api/mcp"
+  },
+  "tools": [
+    {
+      "id": "analyze_code_security",
+      "name": "Analyze Code Security",
+      "description": "Perform multi-LLM security analysis on code with consensus scoring. Supports smart contracts, web applications, and backend systems. Uses NullShot Agent orchestration for coordinated analysis across multiple LLMs.",
+      "category": "security-analysis",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Source code to analyze"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "javascript",
+              "typescript",
+              "python",
+              "solidity",
+              "rust",
+              "go",
+              "java",
+              "csharp"
+            ],
+            "description": "Programming language (e.g., solidity for smart contracts)"
+          },
+          "depth": {
+            "type": "string",
+            "enum": ["quick", "standard", "deep"],
+            "description": "Analysis depth level",
+            "default": "standard"
+          },
+          "focus_areas": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "vulnerabilities",
+                "performance",
+                "gas-optimization",
+                "access-control",
+                "reentrancy",
+                "integer-overflow",
+                "logic-errors"
+              ]
+            },
+            "description": "Specific security areas to focus on",
+            "default": ["vulnerabilities"]
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "optimism", "base", "none"],
+            "description": "Target blockchain for smart contract analysis",
+            "default": "none"
+          }
+        },
+        "required": ["code"]
+      },
+      "capabilities": [
+        "multi-llm-consensus",
+        "deterministic-hashing",
+        "evidence-collection",
+        "capability-tokens"
+      ]
+    },
+    {
+      "id": "mint_attestation",
+      "name": "Mint Attestation",
+      "description": "Create on-chain attestation for audit results with merkle root anchoring and IPFS storage. Integrates with Web3 smart contracts for immutable proof of security analysis.",
+      "category": "blockchain-integration",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "audit_id": {
+            "type": "string",
+            "description": "Unique audit identifier"
+          },
+          "merkle_root": {
+            "type": "string",
+            "description": "Merkle root of evidence bundle (Keccak256 hash)"
+          },
+          "cid": {
+            "type": "string",
+            "description": "IPFS CID of full evidence manifest"
+          },
+          "chain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "optimism", "base"],
+            "description": "Target blockchain for attestation",
+            "default": "ethereum"
+          },
+          "security_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Overall security score from analysis"
+          }
+        },
+        "required": ["audit_id", "merkle_root"]
+      },
+      "capabilities": [
+        "blockchain-integration",
+        "ipfs-storage",
+        "merkle-verification",
+        "capability-tokens"
+      ]
+    },
+    {
+      "id": "get_report",
+      "name": "Get Audit Report",
+      "description": "Retrieve detailed security audit report in multiple formats. Provides comprehensive findings, recommendations, and evidence from multi-LLM analysis.",
+      "category": "reporting",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "audit_id": {
+            "type": "string",
+            "description": "Audit identifier"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["json", "pdf", "html", "markdown"],
+            "description": "Report format",
+            "default": "json"
+          },
+          "include_evidence": {
+            "type": "boolean",
+            "description": "Include detailed evidence and reasoning",
+            "default": true
+          }
+        },
+        "required": ["audit_id"]
+      },
+      "capabilities": ["report-generation", "multi-format-support"]
+    },
+    {
+      "id": "verify_attestation",
+      "name": "Verify Attestation",
+      "description": "Verify on-chain attestation with merkle proof validation. Confirms the integrity and authenticity of security audit attestations stored on blockchain.",
+      "category": "blockchain-verification",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "anchor_id": {
+            "type": "string",
+            "description": "On-chain anchor identifier"
+          },
+          "merkle_proof": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Merkle proof for verification"
+          },
+          "chain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "optimism", "base"],
+            "description": "Blockchain to verify on",
+            "default": "ethereum"
+          }
+        },
+        "required": ["anchor_id"]
+      },
+      "capabilities": ["merkle-verification", "blockchain-integration"]
+    },
+    {
+      "id": "get_agent_metrics",
+      "name": "Get Agent Metrics",
+      "description": "Retrieve performance metrics and statistics from NullShot Agent orchestration. Includes LLM coordination metrics, consensus scores, and compute receipts.",
+      "category": "agent-monitoring",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "time_range": {
+            "type": "string",
+            "enum": ["1h", "24h", "7d", "30d"],
+            "description": "Time range for metrics",
+            "default": "24h"
+          },
+          "include_llm_breakdown": {
+            "type": "boolean",
+            "description": "Include per-LLM performance breakdown",
+            "default": true
+          }
+        },
+        "required": []
+      },
+      "capabilities": ["agent-monitoring", "metrics-collection"]
+    }
+  ],
+  "resources": [
+    {
+      "uri": "nullaudit://reports/{audit_id}",
+      "name": "Audit Report",
+      "description": "Access detailed audit reports with multi-LLM consensus findings",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "nullaudit://attestations/{anchor_id}",
+      "name": "Attestation",
+      "description": "Access on-chain attestation data with merkle verification",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "nullaudit://evidence/{audit_id}",
+      "name": "Evidence Manifest",
+      "description": "Access complete evidence bundle from security analysis",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "nullaudit://metrics",
+      "name": "Agent Metrics",
+      "description": "Real-time metrics from NullShot Agent orchestration",
+      "mimeType": "application/json"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "security-audit-prompt",
+      "name": "Security Audit Prompt",
+      "description": "System prompt for comprehensive security analysis",
+      "arguments": [
+        {
+          "name": "language",
+          "description": "Programming language context"
+        },
+        {
+          "name": "focus",
+          "description": "Security focus areas"
+        }
+      ]
+    },
+    {
+      "id": "web3-audit-prompt",
+      "name": "Web3 Smart Contract Audit Prompt",
+      "description": "Specialized prompt for blockchain smart contract analysis",
+      "arguments": [
+        {
+          "name": "blockchain",
+          "description": "Target blockchain (ethereum, polygon, etc.)"
+        },
+        {
+          "name": "contract_type",
+          "description": "Smart contract type (token, defi, nft, etc.)"
+        }
+      ]
+    }
+  ],
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "base_path": "/api/mcp",
+    "protocol": "http"
+  },
+  "nullshot": {
+    "enabled": true,
+    "agent_orchestration": true,
+    "multi_llm_support": true,
+    "web3_integration": true,
+    "supported_chains": [
+      "ethereum",
+      "polygon",
+      "arbitrum",
+      "optimism",
+      "base"
+    ]
+  },
+  "features": {
+    "multi_llm_consensus": true,
+    "deterministic_execution": true,
+    "capability_tokens": true,
+    "blockchain_integration": true,
+    "ipfs_storage": true,
+    "merkle_verification": true,
+    "agent_monitoring": true,
+    "compute_receipts": true
+  }
+}
