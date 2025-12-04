@@ -4,31 +4,34 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Audit from "./pages/Audit";
 import Reports from "./pages/Reports";
 import Logs from "./pages/Logs";
 import Settings from "./pages/Settings";
 import HumanReview from "./pages/HumanReview";
+import Auth from "./pages/Auth";
 import Layout from "./components/Layout";
 
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path={"/"} component={Dashboard} />
-        <Route path={"/audit"} component={Audit} />
-        <Route path={"/reports"} component={Reports} />
-        <Route path={"/logs"} component={Logs} />
-        <Route path={"/settings"} component={Settings} />
-        <Route path={"/review"} component={HumanReview} />
-        <Route path={"/404"} component={NotFound} />
-        {/* Final fallback route */}
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/auth" component={Auth} />
+      <Route>
+        <Layout>
+          <Switch>
+            <Route path="/" component={Dashboard} />
+            <Route path="/audit" component={Audit} />
+            <Route path="/reports" component={Reports} />
+            <Route path="/logs" component={Logs} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/review" component={HumanReview} />
+            <Route component={NotFound} />
+          </Switch>
+        </Layout>
+      </Route>
+    </Switch>
   );
 }
 
