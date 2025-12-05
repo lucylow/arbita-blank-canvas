@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileText, Download, Search, Filter, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronUp, RefreshCw, BarChart3 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { showSuccessNotification, showErrorNotification, apiClient } from "@/lib/error-handler";
 import {
   Select,
@@ -474,7 +474,7 @@ export default function Reports() {
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </React.Fragment>
                   ))}
                   {filteredReports.length === 0 && (
                     <TableRow>
