@@ -84,10 +84,13 @@ export default function Reports() {
     try {
       setLoading(true);
       const data = await apiClient.get<Report[]>('/api/reports');
-      setReports(data);
-      setFilteredReports(data);
+      const reportsArray = Array.isArray(data) ? data : [];
+      setReports(reportsArray);
+      setFilteredReports(reportsArray);
     } catch (error) {
       showErrorNotification(error, { title: 'Failed to load reports' });
+      setReports([]);
+      setFilteredReports([]);
     } finally {
       setLoading(false);
     }
@@ -181,7 +184,8 @@ export default function Reports() {
   };
 
   // Calculate statistics for chart
-  const statusDistribution = filteredReports.reduce((acc, report) => {
+  const reportsArray = Array.isArray(filteredReports) ? filteredReports : [];
+  const statusDistribution = reportsArray.reduce((acc, report) => {
     acc[report.status] = (acc[report.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
