@@ -3,7 +3,7 @@
  * Manages human review tasks, escalation policies, and feedback collection
  */
 
-import type { HumanTask, HumanFeedback, EscalationPolicy, SecurityFinding } from '@/../../shared/hitl-types';
+import type { HumanTask, HumanFeedback, EscalationPolicy, SecurityFinding } from '@shared/hitl-types';
 
 export class HITLManager {
   private tasks: Map<string, HumanTask> = new Map();
@@ -82,7 +82,7 @@ export class HITLManager {
     policy: EscalationPolicy,
     context: any
   ): HumanTask {
-    const taskId = `hitl_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const taskId = `hitl_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     
     return {
       id: taskId,
@@ -156,7 +156,7 @@ export class HITLManager {
     }
 
     return pending.sort((a, b) => {
-      const priorityOrder = { critical: 3, high: 2, medium: 1, low: 0 };
+      const priorityOrder: Record<HumanTask['priority'], number> = { critical: 3, high: 2, medium: 1, low: 0 };
       return priorityOrder[b.priority] - priorityOrder[a.priority];
     });
   }
@@ -242,7 +242,7 @@ export class HITLManager {
       const matches =
         finding.confidenceScore < policy.conditions.confidenceThreshold &&
         policy.conditions.severity.includes(finding.severity) &&
-        policy.conditions.riskCategories.some(c =>
+        policy.conditions.riskCategories.some((c: string) =>
           finding.riskCategories?.includes(c)
         );
       
@@ -279,7 +279,7 @@ Security finding requires human review:
 ${finding.description}
 
 **Evidence:**
-${finding.evidence?.slice(0, 3).map(e => `- ${e}`).join('\n')}
+${finding.evidence?.slice(0, 3).map((e: string) => `- ${e}`).join('\n')}
 
 **Action Required:**
 Please review and confirm if this finding is valid and requires action.

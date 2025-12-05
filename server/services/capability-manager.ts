@@ -3,7 +3,8 @@
  * Issues and verifies short-lived capability tokens for scoped MCP tool access
  */
 
-import type { CapabilityToken } from '../../shared/envelopes';
+import type { CapabilityToken } from '../../shared/envelopes.js';
+import { logError } from '../utils/error-handler.js';
 
 export class CapabilityManager {
   private serverKey: string;
@@ -49,6 +50,10 @@ export class CapabilityManager {
    */
   verify(tokenString: string): CapabilityToken | null {
     try {
+      if (!tokenString || typeof tokenString !== 'string') {
+        return null;
+      }
+
       // Check cache first
       const cached = this.tokenCache.get(tokenString);
       if (cached) {
@@ -66,9 +71,14 @@ export class CapabilityManager {
         return null;
       }
 
+      // Cache valid token for future lookups
+      this.tokenCache.set(tokenString, token);
+
       return token;
     } catch (error) {
-      console.error('Token verification failed:', error);
+      logError(error instanceof Error ? error : new Error(String(error)), {
+        context: 'Token verification failed',
+      });
       return null;
     }
   }
@@ -81,21 +91,32 @@ export class CapabilityManager {
     tool_id: string,
     action: string
   ): boolean {
-    const token = this.verify(tokenString);
-    
-    if (!token) {
+    try {
+      if (!tokenString || !tool_id || !action) {
+        return false;
+      }
+
+      const token = this.verify(tokenString);
+      
+      if (!token) {
+        return false;
+      }
+
+      if (token.tool_id !== tool_id) {
+        return false;
+      }
+
+      if (!token.allowed_actions.includes(action) && !token.allowed_actions.includes('*')) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      logError(error instanceof Error ? error : new Error(String(error)), {
+        context: 'Error checking action permission',
+      });
       return false;
     }
-
-    if (token.tool_id !== tool_id) {
-      return false;
-    }
-
-    if (!token.allowed_actions.includes(action) && !token.allowed_actions.includes('*')) {
-      return false;
-    }
-
-    return true;
   }
 
   /**

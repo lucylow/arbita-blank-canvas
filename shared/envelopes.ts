@@ -19,8 +19,8 @@ export const InvocationEnvelopeSchema = z.object({
   prompt_template_id: z.string().optional().describe('Template used for LLM prompts'),
   nonce: z.string().optional().describe('Replay protection nonce'),
   ts: z.number().describe('Unix timestamp'),
-  capability_token: z.string().optional(),
-  metadata: z.record(z.string(), z.any()).optional(),
+  capability_token: z.string().optional().describe('JWT capability token for scoped access'),
+  metadata: z.record(z.string(), z.any()).optional().describe('Additional metadata'),
 });
 
 export type InvocationEnvelope = z.infer<typeof InvocationEnvelopeSchema>;
@@ -57,7 +57,7 @@ export const CapabilityTokenSchema = z.object({
   allowed_actions: z.array(z.string()),
   exp: z.number().describe('Expiration timestamp'),
   iat: z.number().describe('Issued at timestamp'),
-  scope: z.record(z.string(), z.any()).optional(),
+  scope: z.record(z.string(), z.any()).optional().describe('Additional scope constraints'),
 });
 
 export type CapabilityToken = z.infer<typeof CapabilityTokenSchema>;
@@ -119,7 +119,7 @@ export function createInvocationEnvelope(
   params: Omit<InvocationEnvelope, 'id' | 'ts'>
 ): InvocationEnvelope {
   return {
-    id: `inv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: `inv_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
     ts: Date.now(),
     ...params,
   };
