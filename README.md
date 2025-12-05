@@ -867,14 +867,3 @@ def verify\_attestation(attestation\_record, payload\_hash, merkle\_proof, signe
         return False
 
     return True
-
-If you’d like I can:
-
-*   Generate a ready-to-paste docker-compose.dev.yml and Kubernetes manifests (Helm charts) for production & staging,
-    
-*   Produce a full ADR and versioned parameter proposal for governance, or
-    
-*   Implement a sample AuditBundle verifier script (Node.js / Python) that fetches the IPFS bundle and validates merkle proofs + signatures end-to-end.
-    
-
-Which one do you want next?
