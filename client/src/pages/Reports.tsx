@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileText, Download, Search, Filter, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronUp, RefreshCw, BarChart3 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { showSuccessNotification, showErrorNotification, apiClient } from "@/lib/error-handler";
 import {
   Select,
@@ -62,28 +62,7 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  useEffect(() => {
-    filterReports();
-  }, [reports, searchTerm, statusFilter]);
-
-  const fetchReports = async () => {
-    try {
-      setLoading(true);
-      const data = await apiClient.get<Report[]>('/api/reports');
-      setReports(data);
-      setFilteredReports(data);
-    } catch (error) {
-      showErrorNotification(error, { title: 'Failed to load reports' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterReports = () => {
+  const filterReports = useCallback(() => {
     let filtered = [...reports];
 
     if (searchTerm) {
@@ -99,6 +78,27 @@ export default function Reports() {
     }
 
     setFilteredReports(filtered);
+  }, [reports, searchTerm, statusFilter]);
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  useEffect(() => {
+    filterReports();
+  }, [filterReports]);
+
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const data = await apiClient.get<Report[]>('/api/reports');
+      setReports(data);
+      setFilteredReports(data);
+    } catch (error) {
+      showErrorNotification(error, { title: 'Failed to load reports' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleRow = (reportId: string) => {
@@ -351,9 +351,8 @@ export default function Reports() {
                 </TableHeader>
                 <TableBody>
                   {filteredReports.map((report) => (
-                    <>
+                    <React.Fragment key={report.id}>
                       <TableRow
-                        key={report.id}
                         className="hover:bg-secondary/30 transition-colors border-border/50 cursor-pointer"
                         onClick={() => toggleRow(report.id)}
                       >
